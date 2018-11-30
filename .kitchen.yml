@@ -1,0 +1,42 @@
+---
+################################################################################
+# Any local customizations should be placed inside the .kitchen.local.yml, which
+# will not be checked in or overwritten. You may also use ~/.kitchen/config.yml
+# or environment variables like VAGRANT_DEFAULT_PROVIDER. Anything in those will
+# take precedence over anything set in `.kitchen.yml`.
+################################################################################
+driver:
+  name: vagrant
+
+provisioner:
+  name: chef_zero
+
+verifier:
+  name: inspec
+
+platforms:
+  - name: windows-2012r2
+
+    driver:
+      box: mwrock/Windows2012R2  # lightweight windows box
+      communicator: winrm
+      gui: false
+      customize:
+        usb: "off"  # USB is disabled on this box to make it more lightweight
+        vrde: "on"  # enable RDP
+
+transport:
+  name: winrm
+
+suites:
+  - name: default
+    run_list:
+      - recipe[alteryx-server::default]
+  - name: license
+    run_list:
+      - recipe[alteryx-server::default]
+      - recipe[alteryx-server::license]
+  - name: uninstall
+    run_list:
+      - recipe[alteryx-server::default]
+      - recipe[alteryx-server::uninstall]
